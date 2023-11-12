@@ -5,20 +5,6 @@ defineProps({
   msg: String,
 })
 
-let intervalId
-onBeforeMount(() => {
-	intervalId = setInterval(() => {
-	}, 800)
-});
-
-onBeforeUnmount(() => {
-	clearInterval(intervalId)
-});
-
-function clear() {
-	clearInterval(intervalId)
-}
-
 const count = ref(0)
 const checked = ref(false)
 const msBetweenFrames = ref(150)
