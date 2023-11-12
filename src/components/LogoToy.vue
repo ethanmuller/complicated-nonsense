@@ -1,10 +1,6 @@
 <script setup>
 import { ref, onBeforeMount, onBeforeUnmount } from 'vue'
 
-defineProps({
-  msg: String,
-})
-
 const count = ref(0)
 const checked = ref(false)
 const msBetweenFrames = ref(150)

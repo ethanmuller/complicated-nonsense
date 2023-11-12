@@ -3,7 +3,7 @@ import LogoToy from './components/LogoToy.vue'
 </script>
 
 <template>
-  <LogoToy msg="wow cool" />
+  <LogoToy />
 </template>
 
 <style scoped>
