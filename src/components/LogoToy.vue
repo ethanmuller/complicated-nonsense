@@ -47,6 +47,10 @@ label {
 label span {
 	display: block;
 }
+label div {
+	display: flex;
+	justify-content: space-between;
+}
 </style>
 
 <template>
@@ -63,9 +67,11 @@ label span {
   <div style="padding-top: 1.5rem">
 	  <button v-if="!checked" type="button" @click="count++">increase frame</button>
 	  <label v-if="checked">
-		  <span>Speed</span>
-		  <input type="range" min="0" max="1" step="0.001" :value="msBetweenFrames" @input="msBetweenFrames = $event.target.value" />
-		  <span>{{msBetweenFrames}}</span>
+		  <div>
+			  <span>Speed</span>
+			  <span>{{msBetweenFrames}}</span>
+		  </div>
+		  <input type="range" min="0" max="1" step="0.0001" :value="msBetweenFrames" @input="msBetweenFrames = $event.target.value" />
 	  </label>
   </div>
 </template>
