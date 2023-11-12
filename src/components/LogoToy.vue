@@ -8,20 +8,46 @@ defineProps({
 let intervalId
 onBeforeMount(() => {
 	intervalId = setInterval(() => {
-	if (checked.value) {
-		count.value++
-	}
-	}, 500)
+	}, 800)
 });
 
 onBeforeUnmount(() => {
 	clearInterval(intervalId)
 });
 
+function clear() {
+	clearInterval(intervalId)
+}
+
 const count = ref(0)
 const checked = ref(false)
+const msBetweenFrames = ref(150)
+const last = ref(0)
+
+
+function step(timestamp) {
+	if (timestamp - last.value > (1 - msBetweenFrames.value)*1000) {
+		if (checked.value) {
+			count.value++
+			last.value = timestamp
+		}
+	}
+	window.requestAnimationFrame(step)
+}
+
+window.requestAnimationFrame(step)
 
 </script>
+
+<style>
+label {
+	text-align: left;
+}
+
+label span {
+	display: block;
+}
+</style>
 
 <template>
   <h1>{{ count }}</h1>
@@ -36,6 +62,11 @@ const checked = ref(false)
 
   <div style="padding-top: 1.5rem">
 	  <button v-if="!checked" type="button" @click="count++">increase frame</button>
+	  <label v-if="checked">
+		  <span>Speed</span>
+		  <input type="range" min="0" max="1" step="0.001" :value="msBetweenFrames" @input="msBetweenFrames = $event.target.value" />
+		  <span>{{msBetweenFrames}}</span>
+	  </label>
   </div>
 </template>
 
