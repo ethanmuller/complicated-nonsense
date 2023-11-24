@@ -1,9 +1,9 @@
 <script setup>
-import LogoToy from './components/LogoToy.vue'
+import PersistentSlider from './components/PersistentSlider.vue'
 </script>
 
 <template>
-  <LogoToy />
+  <PersistentSlider />
 </template>
 
 <style scoped>
