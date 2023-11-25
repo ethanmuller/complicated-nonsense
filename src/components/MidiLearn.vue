@@ -1,55 +1,65 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, reactive, watch } from 'vue'
+import LearnableSlider from './LearnableSlider.vue'
+import Slider from '../Slider.js'
 
-const a = ref(0)
-const aLearn = ref(false)
-const aCC = ref()
-const b = ref(0)
-const bLearn = ref(false)
-const bCC = ref()
-const c = ref(0)
-const cLearn = ref(false)
-const cCC = ref()
+const first = reactive(new Slider(0.5, false, 'CC-A'))
+const second = reactive(new Slider(0.5, false, 'CC-B'))
+const third = reactive(new Slider(0.5, false, 'CC-C'))
+const fourth = reactive(new Slider(0.5, false, 'CC-D'))
+const fifth = reactive(new Slider(0.5, false, 'CC-E'))
+const sixth = reactive(new Slider(0.5, false, 'CC-F'))
 
-const midiAccess = ref(false)
+const all = [first, second, third, fourth, fifth, sixth]
 
+all.forEach(slider => {
+  watch(() => slider.cc, (newCC, oldCC) => {
+      if (newCC !== oldCC) {
+        window.localStorage.setItem(slider.storageKey, newCC)
+      }
+  })
+})
 
 function messageIsCC(message) {
   const type = message.data[0]
   return (type >= 176 && type < 192)
 }
 
-navigator.requestMIDIAccess().then((access) => {
-  midiAccess.value = access
-  midiAccess.value.inputs.forEach((i) => {
-    i.onmidimessage = function(message) {
-      if (messageIsCC(message)) {
-        if (aLearn.value) {
-          aCC.value = message.data[1]
-          aLearn.value = false
-        }
-        if (aCC.value === message.data[1]) {
-          a.value = message.data[2] / 127
-        }
-        if (bLearn.value) {
-          bCC.value = message.data[1]
-          bLearn.value = false
-        }
-        if (bCC.value === message.data[1]) {
-          b.value = message.data[2] / 127
-        }
-        if (cLearn.value) {
-          cCC.value = message.data[1]
-          cLearn.value = false
-        }
-        if (cCC.value === message.data[1]) {
-          c.value = message.data[2] / 127
-        }
+function handleMIDIMessage(message) {
+  if (messageIsCC(message)) {
+    all.forEach(slider => {
+      if (slider.isLearning) {
+        slider.cc = message.data[1]
+        slider.isLearning = false
       }
-    }
+      if (slider.cc === message.data[1]) {
+        slider.value = message.data[2] / 127
+      }
+    })
+  }
+}
+
+navigator.requestMIDIAccess().then((access) => {
+  access.inputs.forEach((i) => {
+    i.onmidimessage = handleMIDIMessage
   })
 }).catch((err) => console.error(err))
 
+function handleUpdate(slider, value) {
+  slider.value = value
+}
+
+function handleLearn(slider) {
+  slider.isLearning = !slider.isLearning
+
+  if (slider.isLearning) {
+    slider.cc = null
+  }
+}
+
+function handleClear(slider) {
+  slider.cc = null
+}
 </script>
 
 <style>
@@ -69,21 +79,12 @@ navigator.requestMIDIAccess().then((access) => {
 
 <template>
   <div class="grid">
-    <div>
-      <div class="label">{{ a }}</div>
-      <button @click="aLearn = !aLearn; aCC = null" :class="aLearn ? 'learning' : ''">⏺ {{aCC}}</button>
-      <input type="range" min="0" max="1" step="0.0001" :value="a" @input="a = $event.target.value" />
-    </div>
-    <div>
-      <div class="label">{{ b }}</div>
-      <button @click="bLearn = !bLearn; bCC = null" :class="bLearn ? 'learning' : ''">⏺ {{bCC}}</button>
-      <input type="range" min="0" max="1" step="0.0001" :value="b" @input="b = $event.target.value" />
-    </div>
-    <div>
-      <div class="label">{{ c }}</div>
-      <button @click="cLearn = !cLearn; cCC = null" :class="cLearn ? 'learning' : ''">⏺ {{cCC}}</button>
-      <input type="range" min="0" max="1" step="0.0001" :value="c" @input="c = $event.target.value" />
-    </div>
+    <LearnableSlider :slider="first" @update="handleUpdate" @learn="handleLearn" @clear="handleClear" />
+    <LearnableSlider :slider="second" @update="handleUpdate" @learn="handleLearn" @clear="handleClear" />
+    <LearnableSlider :slider="third" @update="handleUpdate" @learn="handleLearn" @clear="handleClear" />
+    <LearnableSlider :slider="fourth" @update="handleUpdate" @learn="handleLearn" @clear="handleClear" />
+    <LearnableSlider :slider="fifth" @update="handleUpdate" @learn="handleLearn" @clear="handleClear" />
+    <LearnableSlider :slider="sixth" @update="handleUpdate" @learn="handleLearn" @clear="handleClear" />
   </div>
 </template>
 
