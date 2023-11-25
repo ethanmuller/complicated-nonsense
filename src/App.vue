@@ -1,9 +1,9 @@
 <script setup>
-import PersistentSlider from './components/PersistentSlider.vue'
+import MidiLearn from './components/MidiLearn.vue'
 </script>
 
 <template>
-  <PersistentSlider />
+  <MidiLearn />
 </template>
 
 <style scoped>
